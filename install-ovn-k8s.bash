@@ -1,9 +1,9 @@
 #!/bin/bash
 
-PWD=`dirname $0`
-. $PWD/common.sh
-YAMLS=$PWD/yaml
-TESTS=$PWD/tests
+D=`dirname $0`
+. $D/common.sh
+YAMLS=$D/yaml
+TESTS=$D/tests
 
 set -u
 set -e
@@ -45,8 +45,7 @@ check_k8s_pod ovn-kubernetes ovnkube-node 3
 check_k8s_pod ovn-kubernetes ovnkube-master 1
 check_k8s_pod ovn-kubernetes ovnkube-db 1
 
-
-bash $PWD/runtests.sh
+bash $D/runtests.sh
 
 
 exit 0
