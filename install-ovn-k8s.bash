@@ -8,14 +8,15 @@ TESTS=$D/tests
 set -u
 set -e
 
-CLONE_DIR=cicd1
+CLONE_DIR=ovn-kubernetes-build-and-test
+
 
 ovn_k8s_cid=${1:?Need ovn-k8s commit-id}
 
 cd /tmp
 rm -rf $CLONE_DIR
 
-git clone https://gitlab-master.nvidia.com/sklein/my-test-ci-ovn-kubernetes.git $CLONE_DIR
+git clone ssh://git@gitlab-master.nvidia.com:12051/sdn/ovn-kubernetes.git $CLONE_DIR
 cd $CLONE_DIR
 git checkout $ovn_k8s_cid
 
