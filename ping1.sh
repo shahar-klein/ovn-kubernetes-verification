@@ -5,6 +5,5 @@ set -u
 
 D=`dirname $0`
 . $D/common.sh
-. ./common.sh
 
 title "ping 1"
