@@ -23,6 +23,19 @@ function title() {
 	echo -e "$BLUE* $@$BLACK"
 }
 
+function err() {
+	local m=${@:-Failed}
+	TEST_FAILED=1
+		echo -e "${RED}ERROR: $m$BLACK"
+	return 1
+}
+
+function success() {
+	local m=${@:-OK}
+	m="$m Passed"
+	echo -e "$GREEN$m$BLACK"
+}
+
 function cmd_on() {
 	local host=$1
 	shift
@@ -77,18 +90,6 @@ function vm_scp() {
 	local to=$1
 	echo "[$host] $from $to"
 	scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $pk $from ubuntu@$host:$to
-}
-
-function err() {
-	local m=${@:-Failed}
-	TEST_FAILED=1
-		echo -e "${RED}ERROR: $m$BLACK"
-	return 1
-}
-
-function success() {
-	local m=${@:-OK}
-	echo -e "$GREEN$m$BLACK"
 }
 
 ping_wait_for() {

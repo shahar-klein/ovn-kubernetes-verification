@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: node2-pod
+  namespace: default
+spec:
+  containers:
+  - image: shaharklein/ub-gen:latest
+    command:
+      - sleep
+      - "3600"
+    imagePullPolicy: IfNotPresent
+    name: node2-pod
+  nodeSelector:
+    nodeName: node2
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: node3-pod
+  namespace: default
+spec:
+  containers:
+  - image: shaharklein/ub-gen:latest
+    command:
+      - sleep
+      - "3600"
+    imagePullPolicy: IfNotPresent
+    name: node3-pod
+  nodeSelector:
+    nodeName: node3
+
