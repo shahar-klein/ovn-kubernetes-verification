@@ -38,7 +38,10 @@ kubectl -v=6 create -f ovnkube-db.yaml
 kubectl -v=6 create -f ovnkube-master.yaml
 kubectl -v=6 create -f ovnkube-node.yaml
 
-sleep 10
+PODS=$(kubectl -n ovn-kubernetes get pods | grep -v NAME | awk '{print$1}' | xargs)
+for POD in $PODS ; do
+	kubectl -n ovn-kubernetes wait --for=condition=Ready pod/$POD --timeout=60s || (echo "ERROR: $POD is not up" ; exit 1)
+done
 
 #check pods running
 title "Make sure ovn-kubernetes pods are up and running"
