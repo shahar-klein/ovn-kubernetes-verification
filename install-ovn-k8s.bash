@@ -20,7 +20,7 @@ rm -rf $CLONE_DIR
 mkdir -p $CLONE_DIR
 cd $CLONE_DIR
 
-git clone ssh://git@gitlab-master.nvidia.com:12051/sdn/ovn-kubernetes.git $CLONE_DIR
+git clone ssh://git@gitlab-master.nvidia.com:12051/sdn/ovn-kubernetes.git $GIT_CLONE
 cd $GIT_CLONE
 git checkout $ovn_k8s_cid
 export GOPATH=/tmp/go
