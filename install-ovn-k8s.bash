@@ -41,6 +41,7 @@ kubectl delete -f ovnkube-node.yaml
 kubectl delete -f ovnkube-master.yaml
 kubectl delete -f ovnkube-db.yaml
 kubectl delete -f ovn-setup.yaml
+rm -rf /var/lib/openvswitch/*
 set -e
 sleep 1
 
