@@ -15,6 +15,7 @@ GIT_CLONE=ovn-kubernetes
 
 
 ovn_k8s_cid=${1:?Need ovn-k8s commit-id}
+mode=${2:-nv}
 
 rm -rf $CLONE_DIR
 mkdir -p $CLONE_DIR
@@ -33,8 +34,13 @@ make lint
 make gofmt
 
 cd ../dist/images
+
+image="quay.io/nvidia/ovnkube-u:$ovn_k8s_cid"
+if [ $mode = 'master' ] ; then
+	image="quay.io/nvidia/ovn-kube-u::$ovn_k8s_cid"
+fi
 #./daemonset.sh --image=quay.io/sklein/ovn-kube-u:$ovn_k8s_cid --net-cidr=192.168.0.0/16 --svc-cidr=17.16.1.0/24 --gateway-mode="local" --k8s-apiserver=https://172.20.19.189:6443
-./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --net-cidr=192.168.0.0/16 --svc-cidr=17.16.1.0/24 --gateway-mode="local" --k8s-apiserver=https://172.20.19.189:6443
+./daemonset.sh --image=$image --net-cidr=192.168.0.0/16 --svc-cidr=17.16.1.0/24 --gateway-mode="local" --k8s-apiserver=https://172.20.19.189:6443
 
 cd ../yaml
 set +e
