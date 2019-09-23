@@ -44,7 +44,7 @@ kubectl delete -f ovnkube-db.yaml
 kubectl delete -f ovn-setup.yaml
 rm -rf /var/lib/openvswitch/*
 set -e
-sleep 1
+sleep 5
 
 title "Create ovn-kubernetes pods"
 kubectl -v=6 create -f ovn-setup.yaml
@@ -65,6 +65,13 @@ check_k8s_pod ovn-kubernetes ovnkube-db 1
 
 bash $D/runtests.sh
 
+set +e
+kubectl delete -f ovnkube-node.yaml
+kubectl delete -f ovnkube-master.yaml
+kubectl delete -f ovnkube-db.yaml
+kubectl delete -f ovn-setup.yaml
+rm -rf /var/lib/openvswitch/*
+set -e
 
 exit 0
 
