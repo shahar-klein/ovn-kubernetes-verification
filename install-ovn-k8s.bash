@@ -9,6 +9,7 @@ set -u
 set -e
 
 
+
 CLONE_DIR=/tmp/go/src/github.com/ovn-org
 GIT_CLONE=ovn-kubernetes
 
@@ -39,10 +40,27 @@ image="quay.io/nvidia/ovnkube-u:$ovn_k8s_cid"
 if [ $mode = 'master' ] ; then
 	image="quay.io/sklein/ovn-kube-u:$ovn_k8s_cid"
 fi
-#./daemonset.sh --image=quay.io/sklein/ovn-kube-u:$ovn_k8s_cid --net-cidr=192.168.0.0/16 --svc-cidr=17.16.1.0/24 --gateway-mode="local" --k8s-apiserver=https://172.20.19.189:6443
 ./daemonset.sh --image=$image --net-cidr=192.168.0.0/16 --svc-cidr=17.16.1.0/24 --gateway-mode="shared" --k8s-apiserver=https://172.20.19.189:6443
 
 cd ../yaml
+
+# remove ovnkube-node ovs-daemon part as we are testing with host vased ovs
+if [ $mode = 'master' ] ; then
+	ovnkube_node_yaml_file="./ovnkube-node.yaml"
+	start=$(grep -n "\- name: ovs-daemons" ${ovnkube_node_yaml_file} | cut -d : -f 1)
+	if [[ $? != 0 ]]; then
+   		echo cannot find the ovs-daemons pod
+   		exit 1
+	fi
+	end=$(grep -n "\- name: ovn-controller" ${ovnkube_node_yaml_file} | cut -d : -f 1)
+	if [[ $? != 0 ]]; then
+   		echo cannot find the ovn-controller pod
+   		exit 1
+	fi
+	cp ${ovnkube_node_yaml_file} ${ovnkube_node_yaml_file}.bak
+	sed -i -e "${start},$((end-1))d" ${ovnkube_node_yaml_file} 
+fi
+
 set +e
 kubectl delete -f ovnkube-node.yaml
 kubectl delete -f ovnkube-master.yaml
