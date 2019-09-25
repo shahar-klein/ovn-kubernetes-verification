@@ -32,7 +32,8 @@ fi
 
 
 title "ping north-south"
-kubectl exec -it node3-pod -- ping -W 38 -c 3 8.8.8.8
+set +e
+kubectl exec -it node3-pod -- ping -W 10 -c 3 8.8.8.8
 kubectl exec -it node3-pod -- ping -W 38 -c 3 8.8.8.8
 
 RV=$?
@@ -41,6 +42,7 @@ if [ $RV -ne 0 ] ; then
         exit 1
 fi
 
+set -e
 
 success $TEST
 
