@@ -97,25 +97,29 @@ kubectl delete -f ovn-setup.yaml
 rm -rf /var/lib/openvswitch/*
 set -e
 
-
+YAML_DIR=`pwd`
 if [ $mode != 'master' ] ; then
 	#all good - copy yamls
-	cd ../images
 	YAMLS="k8s-yaml"
 	cd /tmp
 	rm -rf $YAMLS
 	git clone ssh://git@gitlab-master.nvidia.com:12051/sdn/k8s-yaml.git $YAMLS
-	cd -
-	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="shared" --k8s-apiserver="https://K8S_apiserver_address:6443"
-	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --db-vip-image=quay.io/nvidia/ovndb-vip-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="shared" --k8s-apiserver="https://K8S_apiserver_address:6443" --db-vip="VIP address"
-	cp ../yaml/* /tmp/$YAMLS/ovn/ubuntu/shared/
-	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="local" --k8s-apiserver="https://K8S_apiserver_address:6443"
-	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --db-vip-image=quay.io/nvidia/ovndb-vip-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="local" --k8s-apiserver="https://K8S_apiserver_address:6443" --db-vip="VIP address"
-	cp ../yaml/* /tmp/$YAMLS/ovn/ubuntu/local/
-	cd /tmp/$YAMLS
-	git add -A
-	git commit -m "update the ovnkube images to the latest nv-ovn-kubernetes commit:$ovn_k8s_cid"
-	git push
+	cd $YAMLS
+	if `git log --format=%B -n 10 | grep -q $ovn_k8s_cid` ; then
+    		echo $ovn_k8s_cid is already pushed!
+	else
+		cd $YAML_DIR/../images
+		./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="shared" --k8s-apiserver="https://K8S_apiserver_address:6443"
+		./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --db-vip-image=quay.io/nvidia/ovndb-vip-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="shared" --k8s-apiserver="https://K8S_apiserver_address:6443" --db-vip="VIP address"
+		cp ../yaml/* /tmp/$YAMLS/ovn/ubuntu/shared/
+		./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="local" --k8s-apiserver="https://K8S_apiserver_address:6443"
+		./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --db-vip-image=quay.io/nvidia/ovndb-vip-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="local" --k8s-apiserver="https://K8S_apiserver_address:6443" --db-vip="VIP address"
+		cp ../yaml/* /tmp/$YAMLS/ovn/ubuntu/local/
+		cd /tmp/$YAMLS
+		git add -A
+		git commit -m "update the ovnkube images to the latest nv-ovn-kubernetes commit:$ovn_k8s_cid"
+		#git push
+	fi
 fi
 
 exit 0
