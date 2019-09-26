@@ -106,11 +106,11 @@ if [ $mode != 'master' ] ; then
 	rm -rf $YAMLS
 	git clone ssh://git@gitlab-master.nvidia.com:12051/sdn/k8s-yaml.git $YAMLS
 	cd -
-	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="shared" --k8s-apiserver="K8S apiserver address"
-	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --db-vip-image=quay.io/nvidia/ovndb-vip-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="shared" --k8s-apiserver="K8S apiserver address" --db-vip="VIP address"
+	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="shared" --k8s-apiserver="https://K8S_apiserver_address:6443"
+	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --db-vip-image=quay.io/nvidia/ovndb-vip-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="shared" --k8s-apiserver="https://K8S_apiserver_address:6443" --db-vip="VIP address"
 	cp ../yaml/* /tmp/$YAMLS/ovn/ubuntu/shared/
-	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="local" --k8s-apiserver="K8S apiserver address"
-	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --db-vip-image=quay.io/nvidia/ovndb-vip-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="local" --k8s-apiserver="K8S apiserver address" --db-vip="VIP address"
+	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="local" --k8s-apiserver="https://K8S_apiserver_address:6443"
+	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --db-vip-image=quay.io/nvidia/ovndb-vip-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="local" --k8s-apiserver="https://K8S_apiserver_address:6443" --db-vip="VIP address"
 	cp ../yaml/* /tmp/$YAMLS/ovn/ubuntu/local/
 	cd /tmp/$YAMLS
 	git add -A
