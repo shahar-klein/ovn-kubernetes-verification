@@ -115,7 +115,7 @@ if [ $mode != 'master' ] ; then
 	cd /tmp/$YAMLS
 	git add -A
 	git commit -m "update the ovnkube images to the latest nv-ovn-kubernetes commit:$ovn_k8s_cid"
-	#git push
+	git push
 fi
 
 exit 0
