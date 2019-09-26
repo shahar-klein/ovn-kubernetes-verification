@@ -97,6 +97,25 @@ kubectl delete -f ovn-setup.yaml
 rm -rf /var/lib/openvswitch/*
 set -e
 
+
+if [ $mode != 'master' ] ; then
+	#all good - copy yamls
+	cd ../images
+	YAMLS="k8s-yaml"
+	cd /tmp
+	rm -rf $YAMLS
+	git clone ssh://git@gitlab-master.nvidia.com:12051/sdn/k8s-yaml.git $YAMLS
+	cd -
+	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="shared" --k8s-apiserver="K8S apiserver address"
+	cp ../yaml/* /tmp/$YAMLS/ovn/ubuntu/shared/
+	./daemonset.sh --image=quay.io/nvidia/ovnkube-u:$ovn_k8s_cid --net-cidr="net cidr" --svc-cidr="svc cidr" --gateway-mode="local" --k8s-apiserver="K8S apiserver address"
+	cp ../yaml/* /tmp/$YAMLS/ovn/ubuntu/local/
+	cd /tmp/$YAMLS
+	git add -A
+	git commit -m "update the ovnkube images to the latest nv-ovn-kubernetes commit:$ovn_k8s_cid"
+	#git push
+fi
+
 exit 0
 
 
