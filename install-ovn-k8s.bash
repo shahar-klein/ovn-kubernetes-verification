@@ -101,7 +101,7 @@ rm -rf /var/lib/openvswitch/*
 set -e
 
 YAML_DIR=`pwd`
-if [ $mode != 'master' ] ; then
+if [ $branch != 'master' ] ; then
 	#all good - copy yamls
 	YAMLS="k8s-yaml"
 	cd /tmp
