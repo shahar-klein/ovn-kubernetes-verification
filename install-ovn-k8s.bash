@@ -18,26 +18,24 @@ GIT_CLONE=ovn-kubernetes
 ovn_k8s_cid=${1:?Need ovn-k8s commit-id}
 mode=$2
 branch=$3
+repo=${4:?Need repo}
 
-if [ $mode = PUSH ] ; then 
-	rm -rf $CLONE_DIR
-	mkdir -p $CLONE_DIR
-	cd $CLONE_DIR
-	
-	git clone ssh://git@gitlab-master.nvidia.com:12051/sdn/ovn-kubernetes.git $GIT_CLONE
-	cd $GIT_CLONE
-	git checkout $ovn_k8s_cid
-	export GOPATH=/tmp/go
-	
-	cd go-controller
-	make install.tools
-	make
-	make check
-	make lint
-	make gofmt
-	
-	cd ../dist/images
-fi
+rm -rf $CLONE_DIR
+mkdir -p $CLONE_DIR
+cd $CLONE_DIR
+
+git clone $repo $GIT_CLONE
+cd $GIT_CLONE
+git checkout $ovn_k8s_cid
+export GOPATH=/tmp/go
+
+cd go-controller
+make install.tools
+make
+make check
+make lint
+make gofmt
+cd ../dist/images
 
 image="quay.io/nvidia/ovnkube-u:$ovn_k8s_cid"
 if [ $mode = 'MERGE' -o $branch = 'master' ] ; then
@@ -48,7 +46,7 @@ fi
 cd ../yaml
 
 # remove ovnkube-node ovs-daemon part as we are testing with host vased ovs
-if [ $branch = 'master' ] ; then
+if [ $branch = 'master' -a $mode = 'PUSH' ] ; then
 	ovnkube_node_yaml_file="./ovnkube-node.yaml"
 	start=$(grep -n "\- name: ovs-daemons" ${ovnkube_node_yaml_file} | cut -d : -f 1)
 	if [[ $? != 0 ]]; then
@@ -101,7 +99,7 @@ rm -rf /var/lib/openvswitch/*
 set -e
 
 YAML_DIR=`pwd`
-if [ $branch != 'master' ] ; then
+if [ $branch = 'nv-ovn-kubernetes' -a $mode = 'PUSH' ] ; then
 	#all good - copy yamls
 	YAMLS="k8s-yaml"
 	cd /tmp
@@ -121,7 +119,7 @@ if [ $branch != 'master' ] ; then
 		cd /tmp/$YAMLS
 		git add -A
 		git commit -m "update the ovnkube images to the latest nv-ovn-kubernetes commit:$ovn_k8s_cid"
-		#git push
+		git push
 	fi
 fi
 
