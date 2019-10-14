@@ -18,8 +18,8 @@ kubectl label nodes node2 nodeName=node2 --overwrite
 kubectl label nodes node3 nodeName=node3 --overwrite
 kubectl -v=6 create -f $D/ping1.yaml
 
-kubectl wait --for=condition=Ready pod/node2-pod --timeout=10s || (echo "ERROR starting pod/node2-pod" ; exit 1)
-kubectl wait --for=condition=Ready pod/node3-pod --timeout=10s || (echo "ERROR starting pod/node3-pod" ; exit 1)
+kubectl wait --for=condition=Ready pod/node2-pod --timeout=30s || (echo "ERROR starting pod/node2-pod" ; exit 1)
+kubectl wait --for=condition=Ready pod/node3-pod --timeout=30s || (echo "ERROR starting pod/node3-pod" ; exit 1)
 
 title "ping east-west"
 IP_NODE2=$(kubectl get pod node2-pod --template={{.status.podIP}})
