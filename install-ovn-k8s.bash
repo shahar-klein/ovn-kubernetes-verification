@@ -46,7 +46,7 @@ fi
 cd ../yaml
 
 # remove ovnkube-node ovs-daemon part as we are testing with host vased ovs
-if [ $branch = 'master' -a $mode = 'PUSH' ] ; then
+if [ $branch = 'master' ] ; then
 	ovnkube_node_yaml_file="./ovnkube-node.yaml"
 	start=$(grep -n "\- name: ovs-daemons" ${ovnkube_node_yaml_file} | cut -d : -f 1)
 	if [[ $? != 0 ]]; then

@@ -2,7 +2,6 @@
 
 set -e
 set -u
-set -x
 
 TEST=`basename $0`
 D=`dirname $0`
