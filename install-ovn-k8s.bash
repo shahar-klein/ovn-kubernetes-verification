@@ -41,7 +41,7 @@ image="quay.io/nvidia/ovnkube-u:$ovn_k8s_cid"
 if [ $mode = 'MERGE' -o $branch = 'master' ] ; then
 	image="quay.io/sklein/ovn-kube-u:$ovn_k8s_cid"
 fi
-./daemonset.sh --image=$image --net-cidr=192.168.0.0/16 --svc-cidr=17.16.1.0/24 --gateway-mode="shared" --k8s-apiserver=https://172.20.19.189:6443
+./daemonset.sh --image=$image --mtu=1440 --net-cidr=192.168.0.0/16 --svc-cidr=17.16.1.0/24 --gateway-mode="shared" --k8s-apiserver=https://172.20.19.189:6443
 
 cd ../yaml
 
