@@ -46,3 +46,8 @@ set -e
 
 success $TEST
 
+set +e
+kubectl delete -f $D/ping1.yaml 2>/dev/null
+set -e
+
+
