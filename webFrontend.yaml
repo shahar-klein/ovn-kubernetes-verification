@@ -1,0 +1,53 @@
+# Web Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  labels:
+    name: web
+    app: demo
+spec:
+  selector:
+    name: web
+  type: NodePort
+  ports:
+    - port: 80
+      name: http
+      targetPort: 5000
+      protocol: TCP
+
+---
+
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: web
+  labels:
+    name: web
+    app: demo
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        name: web
+    spec:
+      containers:
+        - name: redis
+          image: redis
+          ports:
+            - containerPort: 6379
+              name: redis
+              protocol: TCP
+        - name: python
+          image: janakiramm/py-red
+          env:
+            - name: "REDIS_HOST"
+              value: "localhost"
+          ports:
+            - containerPort: 5000
+              name: http
+              protocol: TCP
+
+
+
