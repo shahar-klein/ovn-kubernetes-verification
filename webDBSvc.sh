@@ -56,7 +56,7 @@ if [[ $userName =~ "SDN Rocks" ]] ; then
   echo "User SDN Rocks successfully retrieved"
 else
   echo "Failed to retrieve user SDN Rocks"
-  err ${result}
+  err ${userName}
   exit 1
 fi
 
@@ -80,7 +80,7 @@ if [[ $userName =~ "OVN Rocks" ]] ; then
   echo "User OVN Rocks successfully retrieved"
 else
   echo "Failed to retrieve user OVN Rocks"
-  err ${result}
+  err ${userName}
   exit 1
 fi
 
