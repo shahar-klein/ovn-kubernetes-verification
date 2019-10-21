@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: apod
+  namespace: default
+spec:
+  containers:
+  - image: shaharklein/ub-gen:latest
+    command:
+      - sleep
+      - "3600"
+    imagePullPolicy: IfNotPresent
+    name: apod
+  nodeSelector:
+    nodeName: node2
+

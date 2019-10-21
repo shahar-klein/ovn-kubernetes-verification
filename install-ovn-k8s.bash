@@ -69,7 +69,14 @@ kubectl delete -f ovnkube-db.yaml
 kubectl delete -f ovn-setup.yaml
 rm -rf /var/lib/openvswitch/*
 set -e
-sleep 5
+sleep 2
+PODS=$(kubectl -n kube-system get pod | grep coredns | awk '{print$1}' | xargs)
+kubectl -n kube-system scale --replicas=0 deployment/coredns
+set +e
+for POD in $PODS ; do
+	kubectl -n kube-system wait --for=delete pod/$POD --timeout=60s
+done
+set -e
 
 title "Create ovn-kubernetes pods"
 kubectl -v=6 create -f ovn-setup.yaml
@@ -77,10 +84,19 @@ kubectl -v=6 create -f ovnkube-db.yaml
 kubectl -v=6 create -f ovnkube-master.yaml
 kubectl -v=6 create -f ovnkube-node.yaml
 
+set -o xtrace
+
 PODS=$(kubectl -n ovn-kubernetes get pods | grep -v NAME | awk '{print$1}' | xargs)
 for POD in $PODS ; do
-	kubectl -n ovn-kubernetes wait --for=condition=Ready pod/$POD --timeout=60s || (echo "ERROR: $POD is not up" ; exit 1)
+	kubectl -n ovn-kubernetes wait --for=condition=Ready pod/$POD --timeout=60s || (echo "ERROR: $POD is not up" ; kubectl -n ovn-kubernetes get pods -o wide ; exit 1)
 done
+
+kubectl -v=6 -n kube-system scale --replicas=2 deployment/coredns
+PODS=$(kubectl -n kube-system get pod | grep coredns | awk '{print$1}' | xargs)
+for POD in $PODS ; do
+	kubectl -v=6 -n kube-system wait --for=condition=Ready pod/$POD --timeout=60s || (echo "ERROR: $POD is not up" ; kubectl -n kube-system get pods -o wide ; exit 1)
+done
+sleep 1
 
 #check pods running
 title "Make sure ovn-kubernetes pods are up and running"
@@ -89,6 +105,8 @@ check_k8s_pod ovn-kubernetes ovnkube-master 1
 check_k8s_pod ovn-kubernetes ovnkube-db 1
 
 bash $D/runtests.sh
+
+exit 0
 
 set +e
 kubectl delete -f ovnkube-node.yaml
