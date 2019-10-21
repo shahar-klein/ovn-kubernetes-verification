@@ -88,9 +88,9 @@ fi
 kubectl -v=6 delete -f  $D/dbBackend.yaml
 kubectl -v=6 delete -f  $D/webFrontend.yaml
 
+set +e
 kubectl wait pod --for=delete -l name=mysql --timeout=60s 2>/dev/null
 kubectl wait pod --for=delete -l name=web --timeout=60s 2>/dev/null
-
 set -e
 
 success $TEST
