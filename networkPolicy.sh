@@ -22,6 +22,12 @@ title "Network Policy across pods"
 
 set +e
 
+ns_label=$(kubectl get namespace kube-system -o jsonpath='{.metadata.labels.name}')
+if [[ $ns_label != "kube-system" ]] ; then
+  echo "namespace kube-system should be labeled with name=kube-system. Exiting..."
+  exit 1
+fi
+
 # cleanup an leftover pods from previous runs
 kubectl delete -f $D/webFrontend.yaml 2>/dev/null
 kubectl delete -f $D/dbBackend.yaml 2>/dev/null
