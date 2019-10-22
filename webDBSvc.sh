@@ -74,6 +74,9 @@ else
   exit 1
 fi
 
+curl -s  http://$CLUSTER_IP:$CLUSTER_PORT/users/1
+curl -s  http://$CLUSTER_IP:$CLUSTER_PORT/users/2
+
 # Retrieve the data from ClusterIP
 userName=$(curl -s  http://$CLUSTER_IP:$CLUSTER_PORT/users/2)
 if [[ $userName =~ "OVN Rocks" ]] ; then
