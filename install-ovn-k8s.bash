@@ -70,6 +70,10 @@ kubectl delete -f ovn-setup.yaml
 rm -rf /var/lib/openvswitch/*
 set -e
 sleep 2
+# This is needed for the NetworkPolicy to work
+kubectl label namespace kube-system name=kube-system --overwrite
+
+# rescale so the DNS pods be part of the OVN network
 kubectl -n kube-system scale --replicas=0 deployment/coredns
 kubectl -n kube-system wait pod --for=delete -l k8s-app=kube-dns --timeout=60s
 
