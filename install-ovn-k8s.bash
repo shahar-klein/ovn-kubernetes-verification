@@ -70,13 +70,8 @@ kubectl delete -f ovn-setup.yaml
 rm -rf /var/lib/openvswitch/*
 set -e
 sleep 2
-PODS=$(kubectl -n kube-system get pod | grep coredns | awk '{print$1}' | xargs)
 kubectl -n kube-system scale --replicas=0 deployment/coredns
-set +e
-for POD in $PODS ; do
-	kubectl -n kube-system wait --for=delete pod/$POD --timeout=60s
-done
-set -e
+kubectl -n kube-system wait pod --for=delete -l k8s-app=kube-dns --timeout=60s
 
 title "Create ovn-kubernetes pods"
 kubectl -v=6 create -f ovn-setup.yaml
@@ -92,10 +87,7 @@ for POD in $PODS ; do
 done
 
 kubectl -v=6 -n kube-system scale --replicas=2 deployment/coredns
-PODS=$(kubectl -n kube-system get pod | grep coredns | awk '{print$1}' | xargs)
-for POD in $PODS ; do
-	kubectl -v=6 -n kube-system wait --for=condition=Ready pod/$POD --timeout=60s || (echo "ERROR: $POD is not up" ; kubectl -n kube-system get pods -o wide ; exit 1)
-done
+kubectl -n kube-system wait pod --for=condition=Ready -l k8s-app=kube-dns --timeout=60s
 sleep 1
 
 #check pods running

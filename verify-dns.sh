@@ -23,6 +23,7 @@ kubectl wait --for=condition=Ready pod/apod --timeout=30s || (echo "ERROR starti
 title "ping google.com"
 kubectl exec -it apod -- ping -W 5 -c 3 google.com
 RV=$?
+kubectl delete -f $D/apod.yaml 2>/dev/null
 if [ $RV -ne 0 ] ; then
 	err $TEST
 	exit 1
