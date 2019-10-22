@@ -1,0 +1,71 @@
+# define network policies between the Web and Mysql Pods
+
+# only Web pods should be able to access the mysql pod at port 3306
+# drop all the egress traffic from mysql pod
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: access-mysql
+spec:
+  podSelector:
+    matchLabels:
+      name: mysql
+  policyTypes:
+    - Egress
+    - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            name: web
+      ports:
+        - protocol: TCP
+          port: 3306
+
+
+---
+# only
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: access-web
+spec:
+  podSelector:
+    matchLabels:
+      name: web
+  policyTypes:
+    - Egress
+    - Ingress
+  ingress:
+    - from:
+      - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5000
+    - from:
+      - ipBlock:
+          cidr: 100.64.0.0/16
+      ports:
+        - protocol: TCP
+          port: 5000
+  egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            name: mysql
+      ports:
+        - protocol: TCP
+          port: 3306
+    - to:
+      - ipBlock:
+          cidr: 10.0.0.0/20
+    - to:
+      - ipBlock:
+          cidr: 172.20.19.128/25
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
