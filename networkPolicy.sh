@@ -109,7 +109,7 @@ sleep 15
 set +e
 title "Non-Web pod should not able to connect to mysql DB"
 dbPodIP=$(kubectl get pod mysql -o jsonpath='{.status.podIP}')
-result=$(kubectl exec -it busybox -- nc -w 3 -zv ${dbPodIP} 3360 2>/dev/null)
+result=$(kubectl exec -it busybox -- nc -w 15 -zv ${dbPodIP} 3360 2>/dev/null)
 if [[ $result =~ open ]] ; then
   echo "Failed: Busybox pod is able to connect to mysql pod."
   err ${result}
@@ -123,7 +123,7 @@ title "Non-web pod should be able to connect to web pod to add an user"
 webPodIPs=$(kubectl get pods -l name=web -o jsonpath='{.items[*].status.podIP}')
 for webPodIP in ${webPodIPs}
 do
-  result=$(kubectl exec -it busybox -- nc -w 3 -zv ${webPodIP} 5000 2>/dev/null)
+  result=$(kubectl exec -it busybox -- nc -w 15 -zv ${webPodIP} 5000 2>/dev/null)
   if [[ $result =~ open ]] ; then
     echo "Success: Busybox pod is able to connect to web pod."
     echo ${result}
