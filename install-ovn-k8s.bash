@@ -44,6 +44,8 @@ fi
 ./daemonset.sh --image=$image --mtu=1440 --net-cidr=192.168.0.0/16 --svc-cidr=17.16.1.0/24 --gateway-mode="shared" --k8s-apiserver=https://172.20.19.189:6443
 
 cd ../yaml
+# Level up to 5
+sed -i '/LOGLEVEL/{n;s/value: "4"/value: "5"/;}' ovnkube-master.yaml
 
 # remove ovnkube-node ovs-daemon part as we are testing with host vased ovs
 if [ $branch = 'master' ] ; then
