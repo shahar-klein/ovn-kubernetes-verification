@@ -101,6 +101,11 @@ fi
 kubectl -v=6 create -f  $D/busyBox.yaml
 kubectl wait pod --for=condition=Ready  busybox --timeout=60s || (echo "ERROR starting pod/busybox" ; exit 1)
 
+# again sleep here after creating the POD for this POD's IP to show up in the
+# OVN ACLs and AddressSets
+sleep 15
+
+
 set +e
 title "Non-Web pod should not able to connect to mysql DB"
 dbPodIP=$(kubectl get pod mysql -o jsonpath='{.status.podIP}')
