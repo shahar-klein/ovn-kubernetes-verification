@@ -75,7 +75,9 @@ kubectl label namespace kube-system name=kube-system --overwrite
 
 # rescale so the DNS pods be part of the OVN network
 kubectl -n kube-system scale --replicas=0 deployment/coredns
+set +e
 kubectl -n kube-system wait pod --for=delete -l k8s-app=kube-dns --timeout=60s
+set -e
 
 title "Create ovn-kubernetes pods"
 kubectl -v=6 create -f ovn-setup.yaml
