@@ -94,15 +94,20 @@ for POD in $PODS ; do
 	kubectl -n ovn-kubernetes wait --for=condition=Ready pod/$POD --timeout=60s || (echo "ERROR: $POD is not up" ; kubectl -n ovn-kubernetes get pods -o wide ; exit 1)
 done
 
-kubectl -v=6 -n kube-system scale --replicas=2 deployment/coredns
-kubectl -n kube-system wait pod --for=condition=Ready -l k8s-app=kube-dns --timeout=60s
-sleep 1
-
 #check pods running
 title "Make sure ovn-kubernetes pods are up and running"
 check_k8s_pod ovn-kubernetes ovnkube-node 3
 check_k8s_pod ovn-kubernetes ovnkube-master 1
 check_k8s_pod ovn-kubernetes ovnkube-db 1
+
+# Give some time for OVN daemons to come up before you start deploying the PODs.
+# There is a race where-in the DNS pods are coming up and OVN is still settling down
+# and it will ignore the DNS pods from including into the network policy list.
+sleep 30
+
+kubectl -v=6 -n kube-system scale --replicas=2 deployment/coredns
+kubectl -n kube-system wait pod --for=condition=Ready -l k8s-app=kube-dns --timeout=60s
+sleep 1
 
 bash $D/runtests.sh
 
