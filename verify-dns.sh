@@ -15,7 +15,6 @@ set +e
 kubectl delete -f $D/apod.yaml 2>/dev/null
 set -e
 
-kubectl label nodes node2 nodeName=node2 --overwrite
 kubectl -v=6 create -f $D/apod.yaml
 
 kubectl wait --for=condition=Ready pod/apod --timeout=30s || (echo "ERROR starting pod/node2-pod" ; exit 1)

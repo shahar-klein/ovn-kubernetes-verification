@@ -14,11 +14,9 @@ set +e
 kubectl delete -f $D/ping1.yaml 2>/dev/null
 set -e
 
-kubectl label nodes node2 nodeName=node2 --overwrite
-kubectl label nodes node3 nodeName=node3 --overwrite
 kubectl -v=6 create -f $D/ping1.yaml
 
-kubectl wait --for=condition=Ready -l k8s-app=ping1-test --timeout=30s || (echo "ERROR starting ping1-test pods" ; exit 1)
+kubectl wait pod --for=condition=Ready -l k8s-app=ping1-test --timeout=30s || (echo "ERROR starting ping1-test pods" ; exit 1)
 
 title "ping east-west"
 IP_NODE2=$(kubectl get pod node2-pod --template={{.status.podIP}})

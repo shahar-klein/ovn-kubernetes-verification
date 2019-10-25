@@ -61,7 +61,8 @@ kubectl get pods
 kubectl get svc
 
 title "Initialize the DB using NodePort"
-NODE_IP=$(kubectl get node node2 -o jsonpath='{.status.addresses[?(@.type=="InternalIP")].address}')
+NODE2=`kubectl get node -o name -l nodeName=node2`
+NODE_IP=$(kubectl get $NODE2 -o jsonpath='{.status.addresses[?(@.type=="InternalIP")].address}')
 NODE_PORT=$(kubectl get svc web  -o jsonpath='{.spec.ports[*].nodePort}')
 
 result=$(curl -s http://$NODE_IP:$NODE_PORT/init)
@@ -86,7 +87,8 @@ fi
 
 # Retrieve the data from Node3
 title "Retrieve a row from the DB using NodePort"
-NODE_IP=$(kubectl get node node3 -o jsonpath='{.status.addresses[?(@.type=="InternalIP")].address}')
+NODE3=`kubectl get node -o name -l nodeName=node3`
+NODE_IP=$(kubectl get $NODE3 -o jsonpath='{.status.addresses[?(@.type=="InternalIP")].address}')
 userName=$(curl -s  http://$NODE_IP:$NODE_PORT/users/1)
 if [[ $userName =~ "SDN Rocks" ]] ; then
   echo "User SDN Rocks successfully retrieved"

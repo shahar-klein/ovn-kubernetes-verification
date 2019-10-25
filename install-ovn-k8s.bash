@@ -100,6 +100,11 @@ check_k8s_pod ovn-kubernetes ovnkube-node 3
 check_k8s_pod ovn-kubernetes ovnkube-master 1
 check_k8s_pod ovn-kubernetes ovnkube-db 1
 
+NODE2=`kubectl get nodes | grep -v master | head -n 2 | tail -n 1 | awk '{print $1}'`
+NODE3=`kubectl get nodes | grep -v master | head -n 3 | tail -n 1 | awk '{print $1}'`
+kubectl label nodes $NODE2 nodeName=node2 --overwrite
+kubectl label nodes $NODE3 nodeName=node3 --overwrite
+
 # Give some time for OVN daemons to come up before you start deploying the PODs.
 # There is a race where-in the DNS pods are coming up and OVN is still settling down
 # and it will ignore the DNS pods from including into the network policy list.
