@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 PWD=`dirname $0`
 
 bash $PWD/verify-dns.sh
