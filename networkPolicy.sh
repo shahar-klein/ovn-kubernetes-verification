@@ -17,7 +17,7 @@ title "Network Policy across pods"
 # Network Policy rules for Web pods
 # -- Web pods should be able to talk to TCP port 3306 on MySQL Pod
 # -- Web pods should be able to accept packets to itself at port 5000
-# -- Web pods should accept all the packets from CIDR 172.20.19.128/25 (K8s Node CIDR)
+# -- Web pods should accept all the packets from CIDR 10.8.48.0/22 (K8s Node CIDR)
 #    (this is for pinging purposes)
 
 set +e
