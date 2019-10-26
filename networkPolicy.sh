@@ -111,27 +111,25 @@ sleep 15
 set +e
 title "Non-Web pod should not able to connect to mysql DB"
 dbPodIP=$(kubectl get pod mysql -o jsonpath='{.status.podIP}')
-result=$(kubectl exec -it busybox -- nc -w 15 -zv ${dbPodIP} 3360 2>/dev/null)
-if [[ $result =~ open ]] ; then
+kubectl exec -it busybox -- nc -w 15 -zv ${dbPodIP} 3360
+if [[ $? -eq 0 ]] ; then
   echo "Failed: Busybox pod is able to connect to mysql pod."
-  err ${result}
+  err $TEST
   exit 1
 else
   echo "Success: Busybox pod is not able to connect to mysql pod."
-  echo ${result}
 fi
 
 title "Non-web pod should be able to connect to web pod to add an user"
 webPodIPs=$(kubectl get pods -l name=web -o jsonpath='{.items[*].status.podIP}')
 for webPodIP in ${webPodIPs}
 do
-  result=$(kubectl exec -it busybox -- nc -w 15 -zv ${webPodIP} 5000 2>/dev/null)
-  if [[ $result =~ open ]] ; then
+  kubectl exec -it busybox -- nc -w 15 -zv ${webPodIP} 5000
+  if [[ $? -eq 0 ]] ; then
     echo "Success: Busybox pod is able to connect to web pod."
-    echo ${result}
   else
     echo "Failed: Busybox pod is not able to connect to web pod."
-    err ${result}
+    err $TEST
     exit 1
   fi
 done
@@ -141,29 +139,23 @@ webPodNames=$(kubectl get pods -l name=web -o jsonpath='{.items[*].metadata.name
 for webPodName in ${webPodNames}
 do
   # try pinging 8.8.8.8 and it should fail
-  result=$(kubectl exec -it ${webPodName} -c python -- ping -c3 -w30 -q 8.8.8.8 2>/dev/null)
-  if [[ $result =~ "100% packet loss" ]] ; then
+  kubectl exec -it ${webPodName} -c python -- ping -c3 -w30 -q 8.8.8.8
+  if [[ $? -ne 0 ]] ; then
     echo "Success: Web pod is not able to ping to 8.8.8.8."
-    echo ${result}
   else
     echo "Failed: Web pod is not able to ping to 8.8.8.8."
-    err ${result}
+    err $TEST
     exit 1
   fi
 
   # try pinging one of the nodes -- NODE_IP from previous run
-  result=$(kubectl exec -it ${webPodName} -c python -- ping -c3 -w30 -q ${NODE_IP} 2>/dev/null)
+  kubectl exec -it ${webPodName} -c python -- ping -c3 -w30 -q ${NODE_IP}
   if [[ $? -ne 0 ]] ; then
     echo "Failed: Web pod is not able to ping to ${NODE_IP}."
-    err ${result}
-    exit 1
-  elif ! [[ $result =~ "0% packet loss" ]] ; then
-    echo "Failed: Web pod is not able to ping to ${NODE_IP}."
-    err ${result}
+    err $TEST
     exit 1
   else
     echo "Success: Web pod is able to ping to ${NODE_IP}."
-    echo ${result}
   fi
 done
 
