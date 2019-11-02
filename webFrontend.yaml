@@ -40,7 +40,7 @@ spec:
               name: redis
               protocol: TCP
         - name: python
-          image: janakiramm/py-red
+          image: quay.io/gmoodalbail/web:latest 
           env:
             - name: "REDIS_HOST"
               value: "localhost"
